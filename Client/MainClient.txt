@@ -1,0 +1,10 @@
+we use  for change events like htmlEvents
+like react.changeevebts
+basic ways of  building some forms
+ control inputs with state
+  handling multiple filed  with with repations
+   add validations condation logic   
+    form submition
+
+we used the \conninfo
+ to check the port the db and the name of the db inside the psql -U postgres
