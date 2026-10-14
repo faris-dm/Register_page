@@ -69,6 +69,7 @@ router.post("/signup", async (req: Request, res: Response) => {
     };
 
     const accessToknes = generateAccess(accessInputs);
+    console.log(accessToknes);
     const refreshTokens = geneateRefresh(refreshInput);
     await Pool.query(
       `
@@ -180,8 +181,8 @@ router.post("/login", async (req: Request, res: Response) => {
 
 router.post("/logout", async (req: Request, res: Response) => {
   try {
-    const { refresh_tokens } = req.cookies;
-    if (!refresh_tokens) {
+    const { refreshToken } = req.cookies;
+    if (!refreshToken) {
       return res
         .status(400)
         .json({ success: false, message: "Refresh token is required" });
@@ -190,7 +191,7 @@ router.post("/logout", async (req: Request, res: Response) => {
     const CheckToknes = await Pool.query(
       `
         SELECT * FROM  refresh_tokens WHERE token=$1 `,
-      [refresh_tokens]
+      [refreshToken]
     );
 
     if (CheckToknes.rows.length === 0) {
@@ -200,7 +201,7 @@ router.post("/logout", async (req: Request, res: Response) => {
     }
 
     await Pool.query(`DELETE FROM refresh_tokens WHERE token=$1`, [
-      refresh_tokens,
+      refreshToken,
     ]);
 
     res.clearCookie("token", {
@@ -225,7 +226,7 @@ router.post("/logout", async (req: Request, res: Response) => {
 
 router.post("/refreshToken", async (req: Request, res: Response) => {
   try {
-    const refreshToken = req.cookies?.refreshTokens;
+    const refreshToken = req.cookies?.refreshToken;
     if (!refreshToken) {
       return res
         .status(401)
