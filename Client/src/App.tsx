@@ -1,11 +1,12 @@
-import React from "react";
-import MainSections from "./Sections/MainSections";
+import { BrowserRouter } from "react-router-dom";
+import Routes from "./Sections/Routes";
 
 function App() {
   return (
     <div>
-      <h3> i am main Sections</h3>
-      <MainSections/>
+      <BrowserRouter>
+        <Routes />
+      </BrowserRouter>
     </div>
   );
 }
