@@ -1,0 +1,98 @@
+ this is Datadox ehrn we define the context
+ import { createContext, useContext, useState } from "react";
+import type { ReactNode } from "react";
+
+type PeopleInfo = {
+  username: string;
+  email: string;
+  password: string;
+};
+
+type BoxShape = {
+  person: PeopleInfo | null;
+  savePerson: (info: PeopleInfo) => void;
+};
+
+const DataBox = createContext<BoxShape | undefined>(undefined);
+
+export function Keeper({ children }: { children: ReactNode }) {
+  const [person, setPerson] = useState<PeopleInfo | null>(null);
+
+  function savePerson(info: PeopleInfo) {
+    setPerson(info);
+  }
+
+  return (
+    <DataBox.Provider value={{ person, savePerson }}>
+      {children}
+    </DataBox.Provider>
+  );
+}
+
+export function useGrab() {
+  const found = useContext(DataBox);
+  if (!found) throw new Error("useGrab must be used inside Keeper");
+  return found;
+}
+
+
+ and this is the main.tsx
+ import { createRoot } from "react-dom/client";
+import App from "./App";
+import { Keeper } from "./DataBox";
+
+createRoot(document.getElementById("root")!).render(
+  <Keeper>
+    <App />
+  </Keeper>
+);
+
+
+signupd form
+import { useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
+import { useGrab } from "./DataBox";
+
+function SignupForm() {
+  const { savePerson } = useGrab();
+  const [typing, setTyping] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+
+  function onType(e: ChangeEvent<HTMLInputElement>) {
+    setTyping({ ...typing, [e.target.name]: e.target.value });
+  }
+
+  function onSend(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    savePerson(typing); // puts the data into the context
+  }
+
+  return (
+    <form onSubmit={onSend}>
+      <input name="username" placeholder="Username" value={typing.username} onChange={onType} />
+      <input name="email" type="email" placeholder="Email" value={typing.email} onChange={onType} />
+      <input name="password" type="password" placeholder="Password" value={typing.password} onChange={onType} />
+      <button type="submit">Save</button>
+    </form>
+  );
+}
+
+export default SignupForm;
+
+
+and  profile card 
+
+  Delete the big commented-out block at the top of the file. It’s about 300 lines of old code.
+Call the context. Import useAuth, and at the top of the component take setUser from it. Reason: it’s the only way this page can tell the app who logged in.
+Register: put the user in context before navigating. After result is OK, call setUser(result.user), then navigate("/profile"). Right now you navigate with the context still empty, so Profile sees nobody.
+Write the login submit. Your login form only has e.preventDefault(). Make handleLoginSubmit the same shape as handleSubmit, with three changes:
+URL /api/login
+body loginForm
+clear loginForm after success
+It’s a copy because both do the same job: send, read the answer, set the user, navigate.
+One error state for both forms. Rename registerError to error, and show the same error box inside the login form. switchTab already clears it.
+Login button needs disabled={loading} and a “Please wait...” text, like the register button.
+Redirect if already logged in. The context also has a loading, which clashes with your page’s loading. Rena
