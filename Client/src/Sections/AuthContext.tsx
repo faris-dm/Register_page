@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 import { createContext ,useContext,useState,useEffect} from "react";
 
 
-  type UserType ={
+ export   type UserType ={
     id:number,
      username:string,
      email:string,
@@ -19,7 +19,7 @@ import { createContext ,useContext,useState,useEffect} from "react";
 
  type ContextType= {
     user:UserType |null,
-    loading :boolean,
+    checking :boolean,
     setUser:(user:UserType | null )=> void
     logout :()=>Promise<void>
 
@@ -29,7 +29,7 @@ import { createContext ,useContext,useState,useEffect} from "react";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
    const [user,setUser]=useState<UserType |null >(null)
-   const [loading,setLoading]=useState(true)
+   const [checking,setChecking]=useState(true)
 
 
    useEffect(()=> {
@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log("no user load in",error)
 
     } finally {
-      setLoading(false)
+      setChecking(false)
     }
       
 
@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 
    async  function logout() {
-   const res=   await fetch(`localhost://2040/logout`,{
+   const res=   await fetch(`http://localhost://2040/api/logout`,{
          method:"POST",credentials:"include"
       })
 
@@ -67,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null)
    }
    return (
-     <AuthConetx.Provider value={{ user, loading, setUser, logout }}>
+     <AuthConetx.Provider value={{ user, checking, setUser, logout }}>
        {/* AuthConetx */}
        {children}
      </AuthConetx.Provider>
