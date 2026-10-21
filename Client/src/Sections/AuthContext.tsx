@@ -10,12 +10,15 @@ import type { ReactNode } from "react";
 import { createContext ,useContext,useState,useEffect} from "react";
 
 
- export   type UserType ={
-    id:number,
-     username:string,
-     email:string,
-
-  }
+export type UserType = {
+  id: number;
+  username: string | null;
+  email: string;
+  first_name: string | null;
+  last_name: string | null;
+  bio: string | null;
+  avater_url: string | null;
+};
 
  type ContextType= {
     user:UserType |null,
@@ -57,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 
    async  function logout() {
-   const res=   await fetch(`http://localhost://2040/api/logout`,{
+   const res=   await fetch(`http://localhost:2040/api/logout`,{
          method:"POST",credentials:"include"
       })
 
