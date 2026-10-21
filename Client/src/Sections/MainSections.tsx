@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import useAuth from "./AuthContext";
 import { FaEye, FaEyeSlash, FaGoogle, FaGithub } from "react-icons/fa";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useNavigate, Navigate, Link } from "react-router-dom";
 
 type RegisterType = {
   username: string;
@@ -41,6 +41,13 @@ function Register() {
       [e.target.name]: e.target.value,
     });
   }
+
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:2040/api/auth/google";
+  };
+  const handleGitHubLogin = () => {
+    window.location.href = "http://localhost:2040/api/auth/github";
+  };
 
   function handleLoginChange(e: ChangeEvent<HTMLInputElement>) {
     setLoginForm({
@@ -84,7 +91,7 @@ function Register() {
         password: "",
       });
       setUser(result.user);
-      navigate("/profile");
+      navigate("/api/profile");
     } catch (error) {
       console.error(error);
       setErrorMessage("Could not reach the server. Try again.");
@@ -120,7 +127,7 @@ function Register() {
         password: "",
       });
       setUser(result.user);
-      navigate("/profile");
+      navigate("/api/profile");
     } catch (error) {
       console.error(error);
       setErrorMessage("Could not reach the server. Try again.");
@@ -137,7 +144,7 @@ function Register() {
     "flex items-center justify-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 sm:text-sm";
 
   if (checking) return null;
-  if (user) return <Navigate to="/profile" replace />;
+  if (user) return <Navigate to="/api/profile" replace />;
 
   return (
     <main className="grid min-h-screen grid-cols-1 md:grid-cols-2">
@@ -307,12 +314,20 @@ function Register() {
 
                 {/* SMALL SOCIAL BUTTONS BELOW SIGNUP */}
                 <div className="grid grid-cols-2 gap-3">
-                  <button type="button" className={socialButtonClass}>
+                  <button
+                    onClick={handleGoogleLogin}
+                    type="button"
+                    className={socialButtonClass}
+                  >
                     <FaGoogle className="shrink-0 text-green-500" />
                     Google
                   </button>
 
-                  <button type="button" className={socialButtonClass}>
+                  <button
+                    onClick={handleGitHubLogin}
+                    type="button"
+                    className={socialButtonClass}
+                  >
                     <FaGithub className="shrink-0 text-gray-900" />
                     GitHub
                   </button>
@@ -373,9 +388,9 @@ function Register() {
                     <a
                       href="#forgot-password"
                       onClick={(e) => e.preventDefault()}
-                      className="text-xs font-medium text-gray-600 hover:text-gray-900 sm:text-sm"
+                      className="text-xs font-medium text-red-600 hover:text-gray-900 sm:text-sm"
                     >
-                      Forgot password?
+                      <Link to="/reset"> Forgot password</Link>
                     </a>
                   </div>
 
@@ -416,12 +431,19 @@ function Register() {
 
                 {/* SMALL SOCIAL BUTTONS BELOW LOGIN */}
                 <div className="grid grid-cols-2 gap-3">
-                  <button type="button" className={socialButtonClass}>
-                    <FaGoogle className="shrink-0 text-red-500" />
+                  <button
+                    onClick={handleGoogleLogin}
+                    type="button"
+                    className={socialButtonClass}
+                  >
+                    <FaGoogle className="shrink-0 text-green-500" />
                     Google
                   </button>
-
-                  <button type="button" className={socialButtonClass}>
+                  <button
+                    onClick={handleGitHubLogin}
+                    type="button"
+                    className={socialButtonClass}
+                  >
                     <FaGithub className="shrink-0 text-gray-900" />
                     GitHub
                   </button>
