@@ -5,7 +5,7 @@ import Pool from "../config/db.js";
 import { Router } from "express";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
-
+import NodeMailer from "nodemailer";
 const router = Router();
 router.use(express.urlencoded({ extended: true }));
 router.use(cookieParser());
@@ -182,46 +182,42 @@ router.post("/login", async (req: Request, res: Response) => {
 router.post("/logout", async (req: Request, res: Response) => {
   try {
     const { refreshToken } = req.cookies;
-    if (!refreshToken) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Refresh token is required" });
+
+    if (refreshToken) {
+      await Pool.query(`DELETE FROM refresh_tokens WHERE token=$1`, [
+        refreshToken,
+      ]);
     }
 
-    const CheckToknes = await Pool.query(
-      `
-        SELECT * FROM  refresh_tokens WHERE token=$1 `,
-      [refreshToken]
-    );
-
-    if (CheckToknes.rows.length === 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Refresh token not found" });
-    }
-
-    await Pool.query(`DELETE FROM refresh_tokens WHERE token=$1`, [
-      refreshToken,
-    ]);
-
-    res.clearCookie("token", {
+    const cookieOptions = {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
-    });
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
+      sameSite: "none" as const,
+    };
+    res.clearCookie("token", cookieOptions);
+    res.clearCookie("refreshToken", cookieOptions);
 
     return res
       .status(200)
       .json({ success: true, message: "Logged out successfully" });
   } catch (error) {
     console.log(error);
-    return res.status(500).json("server failed");
+    return res.status(500).json({ success: false, message: "server failed" });
   }
+});
+
+router.post("/password/reset", async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+
+    const CheckEmail = await Pool.query(
+      ` SELECT  * FROM users  WHERE email=$1`,
+      [email]
+    );
+    if (!CheckEmail) {
+      return res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {}
 });
 
 router.post("/refreshToken", async (req: Request, res: Response) => {
