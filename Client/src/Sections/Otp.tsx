@@ -1,34 +1,49 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { FiMail, FiArrowRight, FiShield } from "react-icons/fi";
 import { ImSpinner8 } from "react-icons/im";
-
-
-
+import { useNavigate } from "react-router-dom";
 
 export default function EmailVerification() {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
-  const [errorMessage,setErrorMessage]=useState<string>(" ")
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const handleSubmit =  async () => {
+  const Navigate = useNavigate();
+
+  const handleSubmit = async () => {
+    const digitOTP = code.join();
+    if (!/^\d{6}$/.test(digitOTP)) {
+      setErrorMessage("Please enter all 6 digits.");
+      return;
+    }
+
     setLoading(true);
-    const reponse=  await fetch(`http://localhost:2040/api/otp`,{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        credentials:"include",
-        body:JSON.stringify(code)
-    })
+    setErrorMessage("");
 
-     const result = await reponse.json();
-     if (!reponse.ok) {
-       setErrorMessage(result.message);
-       return;
-     } else {
-        setErrorMessage("failed to send the otp")
+    try {
+      const reponse = await fetch(`http://localhost:2040/api/otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ digitOTP }),
+      });
 
-     }
+      const result = await reponse.json();
+      if (!reponse.ok) {
+        setErrorMessage(result.message);
+        return;
+      } else {
+        setErrorMessage("failed to send the otp");
+      }
 
-     setCode(["","","","","",""])
+      setCode(["", "", "", "", "", ""]);
+      Navigate("/newPassword");
+    } catch (error) {
+      console.log(error);
+      setErrorMessage("unable to connect to server");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -44,9 +59,7 @@ export default function EmailVerification() {
             <p className="text-lg font-bold tracking-tight">
               meridian<span className="text-[#38866a]">.</span>
             </p>
-            <p className="text-xs text-gray-500">
-              YOUR SPACE. YOUR SECURITY.
-            </p>
+            <p className="text-xs text-gray-500">YOUR SPACE. YOUR SECURITY.</p>
           </div>
         </div>
 
@@ -61,11 +74,22 @@ export default function EmailVerification() {
         </h1>
 
         <p className="mt-3 text-sm leading-6 text-gray-500">
-          We sent you a verification code. Enter the 6-digit
-          code below to continue.
+          We sent you a verification code. Enter the 6-digit code below to
+          continue.
         </p>
 
         {/* OTP inputs */}
+
+        {errorMessage && (
+          <p
+            role="alert"
+            className="rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-600"
+          >
+            {" "}
+            {errorMessage}
+          </p>
+        )}
+
         <div className="mt-8">
           <label className="mb-3 block text-sm font-medium text-[#263c32]">
             Verification code
