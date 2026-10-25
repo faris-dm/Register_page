@@ -85,13 +85,13 @@ function Register() {
       }
 
       console.log(result);
-      setRegisterForm({
-        username: "",
-        email: "",
-        password: "",
-      });
+      // setRegisterForm({
+      //   username: "",
+      //   email: "",
+      //   password: "",
+      // });
       setUser(result.user);
-      navigate("/api/profile");
+      navigate("/email", { state: { email: registerForm.email } });
     } catch (error) {
       console.error(error);
       setErrorMessage("Could not reach the server. Try again.");
@@ -144,7 +144,7 @@ function Register() {
     "flex items-center justify-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 sm:text-sm";
 
   if (checking) return null;
-  if (user) return <Navigate to="/api/profile" replace />;
+  // if (user) return <Navigate to="/api/profile" replace />;
 
   return (
     <main className="grid min-h-screen grid-cols-1 md:grid-cols-2">
@@ -205,7 +205,7 @@ function Register() {
               aria-pressed={activeTab === "signup"}
               className={`rounded-lg py-2 text-sm font-medium transition ${
                 activeTab === "signup"
-                  ? "bg-white text-gray-900 shadow-sm"
+                  ? "bg-white tesxt-gray-900 shadow-sm"
                   : "text-gray-500 hover:text-gray-900"
               }`}
             >
@@ -304,6 +304,7 @@ function Register() {
                 )}
 
                 {/* MAIN SIGNUP BUTTON */}
+                {/* <Link to="/emil"> */}
                 <button
                   type="submit"
                   disabled={loading}
@@ -311,6 +312,7 @@ function Register() {
                 >
                   {loading ? "Creating account..." : "Create account"}
                 </button>
+                {/* </Link> */}
 
                 {/* SMALL SOCIAL BUTTONS BELOW SIGNUP */}
                 <div className="grid grid-cols-2 gap-3">
