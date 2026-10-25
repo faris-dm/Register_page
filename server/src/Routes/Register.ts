@@ -6,11 +6,34 @@ import { Router } from "express";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import NodeMailer from "nodemailer";
-import { randomInt,createHash } from "crypto";
+import { randomInt, createHash } from "crypto";
 const router = Router();
 router.use(express.urlencoded({ extended: true }));
 router.use(cookieParser());
 router.use(express.json());
+
+/*
+
+### Medium-Level Project Ideas (React with TSX):
+1. **E-Library System**: A platform where users can browse, borrow, and return e-books. Use props for book details, `useState` for managing user sessions, and hooks for API calls to the backend.
+2. **Expense Splitter**: A tool for splitting expenses among friends. Use props for user data, `useState` for managing balances, and hooks for backend integration.
+
+---
+
+### 10 High-Level Project Ideas:
+1. **Social Media Platform**: Build a mini social network with user authentication, posts, likes, and comments.
+2. **E-Commerce Store**: A full-stack e-commerce app with product listings, cart management, and payment integration.
+3. **Learning Management System (LMS)**: A platform for managing courses, students, and assignments.
+4. **Project Management Tool**: A Trello-like app for managing tasks, boards, and teams.
+5. **Chat Application**: A real-time chat app with WebSocket integration.
+6. **Fitness Tracker**: A platform for tracking workouts, calories, and progress over time.
+7. **Job Board**: A job listing platform with user authentication and application tracking.
+8. **Online Quiz App**: A quiz platform with dynamic question rendering and score tracking.
+9. **Event Management System**: A platform for creating and managing events with RSVP functionality.
+10. **Portfolio Builder**: A tool for users to create and customize their personal portfolios.
+
+
+*/
 
 const secret = process.env.AccessSecret as string;
 const refreshSecret = process.env.refreshSecret as string;
@@ -23,14 +46,13 @@ const geneateRefresh = (refreshInput: any): string => {
   return jwt.sign(refreshInput, refreshSecret, { expiresIn: "7d" });
 };
 
- function hastOTp(otp:string) :string {
-  return createHash("sha256").update(otp).digest("hex")
- }
+function hastOTp(otp: string): string {
+  return createHash("sha256").update(otp).digest("hex");
+}
 
-
- function generateOtp(): string {
-   return randomInt(100000, 1000000).toString();
- }
+function generateOtp(): string {
+  return randomInt(100000, 1000000).toString();
+}
 
 //  https://www.figma.com/design/0zf7EfwkdTxHP8fFh1O3uG/Course-Selling-Website--Community-?node-id=0-1&p=f&t=t5i17zRQd5jAs76J-0
 
@@ -46,7 +68,7 @@ router.post("/signup", async (req: Request, res: Response) => {
     if (!username || !email || !password) {
       return res.status(400).json({ message: "Fill all fields" });
     }
- const normalizedEmail = email.trim().toLowerCase();
+    const normalizedEmail = email.trim().toLowerCase();
     const selectQuery = await Pool.query(
       `
   SELECT *  FROM  users  WHERE  email=$1`,
@@ -69,39 +91,33 @@ router.post("/signup", async (req: Request, res: Response) => {
 
     const finalResult = saveUser.rows[0];
 
- 
-
-
-    const otp = generateOtp()
+    const otp = generateOtp();
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes from now
-    const otpHashs=hastOTp(otp)
+    const otpHashs = hastOTp(otp);
 
-
-    
     const addOTPQuery = await Pool.query(
       `INSERT INTO  otp_table  (user_id,otp,expires_at)VALUES ($1,$2,$3) `,
       [finalResult.id, otpHashs, expiresAt]
     );
 
-       const sendOtp = NodeMailer.createTransport({
-         service: "gmail",
-         auth: {
-           user: process.env.Owner_EMAIL,
-           pass: process.env.Owner_app_password,
-         },
-         tls: {
-           // Skip the certificate check only while developing
-           rejectUnauthorized: process.env.NODE_ENV === "production",
-         },
-       });
+    const sendOtp = NodeMailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.Owner_EMAIL,
+        pass: process.env.Owner_app_password,
+      },
+      tls: {
+        // Skip the certificate check only while developing
+        rejectUnauthorized: process.env.NODE_ENV === "production",
+      },
+    });
 
     let emailOTP = await sendOtp.sendMail({
       from: process.env.Owner_EMAIL,
-      to:finalResult.email,
+      to: finalResult.email,
       subject: "your email verfication OTP",
       text: `enter this code ${otp} it will exprese in five minutes`,
     });
-
 
     console.log(otp);
     console.log(`otp accepted`, emailOTP.accepted);
@@ -120,29 +136,29 @@ router.post("/signup", async (req: Request, res: Response) => {
     // const accessToknes = generateAccess(accessInputs);
     // console.log(accessToknes);
     // const refreshTokens = geneateRefresh(refreshInput);
-//     await Pool.query(
-//       `
-//  INSERT INTO  refresh_tokens (user_id,token,done_date)  VALUES ($1,$2,$3) RETURNING id,user_id,token`,
-//       [
-//         finalResult.id,
-//         refreshTokens,
-//         new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-//       ]
-//     );
+    //     await Pool.query(
+    //       `
+    //  INSERT INTO  refresh_tokens (user_id,token,done_date)  VALUES ($1,$2,$3) RETURNING id,user_id,token`,
+    //       [
+    //         finalResult.id,
+    //         refreshTokens,
+    //         new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    //       ]
+    //     );
 
-//     res.cookie("token", accessToknes, {
-//       httpOnly: true,
-//       secure: true,
-//       sameSite: "none",
-//       maxAge: 15 * 60 * 1000,
-//     });
+    //     res.cookie("token", accessToknes, {
+    //       httpOnly: true,
+    //       secure: true,
+    //       sameSite: "none",
+    //       maxAge: 15 * 60 * 1000,
+    //     });
 
-//     res.cookie("refreshToken", refreshTokens, {
-//       httpOnly: true,
-//       secure: true,
-//       sameSite: "none",
-//       maxAge: 7 * 24 * 60 * 60 * 1000,
-//     });
+    //     res.cookie("refreshToken", refreshTokens, {
+    //       httpOnly: true,
+    //       secure: true,
+    //       sameSite: "none",
+    //       maxAge: 7 * 24 * 60 * 60 * 1000,
+    //     });
 
     return res.status(201).json({
       success: true,
@@ -328,106 +344,146 @@ router.post("/refreshToken", async (req: Request, res: Response) => {
 });
 
 
-router.post("/otp", async (req,res)=> {
-  const {otp,email} =req.body
+router.post("/otp", async (req, res) => {
+  const { otp, email } = req.body;
+
+  if (
+    typeof email !== "string" ||
+    typeof otp !== "string" ||
+    !/^\d{6}$/.test(otp)
+  ) {
+    return res.status(400).json({
+      message: "Enter your email and a valid six-digit OTP",
+    });
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+  const client = await Pool.connect();
+
   try {
-    if (
-      typeof email !== "string" ||
-      typeof otp !== "string" ||
-      !/^\d{6}$/.test(otp)
-    ) {
+    await client.query("BEGIN");
+
+    const result = await client.query(
+      `SELECT
+         o.id AS otp_id,
+         o.user_id,
+         o.otp AS otp_hash,
+         o.expires_at
+       FROM otp_table o
+       JOIN users u ON u.id = o.user_id
+       WHERE u.email = $1
+         AND u.email_verified = FALSE
+       ORDER BY o.id DESC
+       LIMIT 1
+       FOR UPDATE OF o`,
+      [normalizedEmail]
+    );
+
+    if (result.rows.length === 0) {
+      await client.query("ROLLBACK");
+
       return res.status(400).json({
-        message: "Enter your email and six-digit OTP",
+        message: "Invalid OTP or no pending verification",
       });
     }
 
-    const selectOTP = await Pool.query(
-      ` SELECT otp_table.id,otp_table.otp,users.id,otp_table.expires_at FROM otp_table  JOIN  users ON users.id=otp_table.user_id WHERE users.email=$1  
-         AND users.email_verified = FALSE
-       ORDER BY otp_table.id DESC
-       LIMIT 1
-       FOR UPDATE OF  otp_table  `,
-      [email.trim().toLocaleLowerCase()]
-    );
+    const savedOtp = result.rows[0];
 
-    if (selectOTP.rows.length === 0) {
-      return res
-        .status(409)
-        .json({ message: "Invalid OTP or no pending verification" });
-    }
-
-    const saveOtp = selectOTP.rows[0];
-
-    if (new Date(saveOtp.expires_at).getTime() <= Date.now()) {
-      await Pool.query(`DELETE FROM otp_table WHERE user_id = $1`, [
-        saveOtp.user_id,
+    // Reject an expired OTP first.
+    if (new Date(savedOtp.expires_at).getTime() <= Date.now()) {
+      await client.query("DELETE FROM otp_table WHERE user_id = $1", [
+        savedOtp.user_id,
       ]);
 
-      const submittedOtpHash = hastOTp(otp);
+      await client.query("COMMIT");
 
-      if (submittedOtpHash !== saveOtp.otp) {
-        return res.status(400).json({
-          message: "Invalid OTP",
-        });
-      }
+      return res.status(400).json({
+        message: "OTP expired. Please request a new code.",
+      });
     }
 
-    // Mark the user's email as verified.
-    const verifiedUser = await Pool.query(
+    // Hash the submitted code and compare it with the stored hash.
+    const submittedOtpHash = hastOTp(otp);
+
+    if (submittedOtpHash !== savedOtp.otp_hash) {
+      await client.query("ROLLBACK");
+
+      return res.status(400).json({
+        message: "Invalid OTP",
+      });
+    }
+
+    // Verify the email only after the code passes validation.
+    const verifiedResult = await client.query(
       `UPDATE users
        SET email_verified = TRUE
-       WHERE id = $1
+       WHERE id = $1 AND email_verified = FALSE
        RETURNING id, username, email`,
-      [saveOtp.user_id]
+      [savedOtp.user_id]
     );
-    const user = verifiedUser.rows[0];
-// delete all the user otps so no users use them after that
-    await Pool.query(`DELETE FROM otp_table WHERE user_id = $1`, [user.id]);
 
+    if (verifiedResult.rows.length === 0) {
+      await client.query("ROLLBACK");
 
-const accessToken = generateAccess({
-  id: user.id,
-  email: user.email,
-});
+      return res.status(409).json({
+        message: "This account is already verified or unavailable",
+      });
+    }
 
-const refreshToken = geneateRefresh({
-  id: user.id,
-});
+    const user = verifiedResult.rows[0];
 
+    // Consume the OTP so it cannot be reused.
+    await client.query("DELETE FROM otp_table WHERE user_id = $1", [user.id]);
 
+    const accessToken = generateAccess({
+      id: user.id,
+      email: user.email,
+    });
 
+    const refreshToken = geneateRefresh({
+      id: user.id,
+    });
 
-
- await Pool.query(
-   `INSERT INTO refresh_tokens (user_id, token, done_date)
+    await client.query(
+      `INSERT INTO refresh_tokens (user_id, token, done_date)
        VALUES ($1, $2, $3)`,
-   [user.id, refreshToken, new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)]
- );
+      [user.id, refreshToken, new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)]
+    );
 
- const isProduction = process.env.NODE_ENV === "production";
+    await client.query("COMMIT");
 
-   res.cookie("token", accessToken, {
-     httpOnly: true,
-     secure: isProduction,
-     sameSite: isProduction ? "none" : "lax",
-     maxAge: 15 * 60 * 1000,
-   });
+    const isProduction = process.env.NODE_ENV === "production";
 
-   res.cookie("refreshToken", refreshToken, {
-     httpOnly: true,
-     secure: isProduction,
-     sameSite: isProduction ? "none" : "lax",
-     maxAge: 7 * 24 * 60 * 60 * 1000,
-   });
-     return res.status(200).json({
-       success: true,
-       message: "Email verified successfully",
-       user,
-     });
+    res.cookie("token", accessToken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      maxAge: 15 * 60 * 1000,
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Email verified successfully",
+      user,
+    });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json("server failed");
+    await client.query("ROLLBACK").catch(() => {});
+    console.error("OTP verification error:", error);
+
+    return res.status(500).json({
+      message: "Server failed to verify OTP",
+    });
+  } finally {
+    client.release();
   }
-})
+});
+
 
 export default router;
