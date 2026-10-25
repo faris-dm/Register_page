@@ -1,22 +1,24 @@
 import { useState, type FormEvent } from "react";
 import { FiMail, FiArrowRight, FiShield } from "react-icons/fi";
 import { ImSpinner8 } from "react-icons/im";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import Auth from "./AuthContext";
 
 export default function EmailVerification() {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-
+  const { setUser } = Auth();
   const Navigate = useNavigate();
+  const Location = useLocation();
 
   const handleSubmit = async () => {
-    const digitOTP = code.join();
+    const digitOTP = code.join("");
     if (!/^\d{6}$/.test(digitOTP)) {
       setErrorMessage("Please enter all 6 digits.");
       return;
     }
-
+    const email = Location.state?.email;
     setLoading(true);
     setErrorMessage("");
 
@@ -25,19 +27,18 @@ export default function EmailVerification() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ digitOTP }),
+        body: JSON.stringify({ otp: digitOTP, email }),
       });
 
       const result = await reponse.json();
       if (!reponse.ok) {
         setErrorMessage(result.message);
         return;
-      } else {
-        setErrorMessage("failed to send the otp");
       }
 
       setCode(["", "", "", "", "", ""]);
       Navigate("/newPassword");
+      setUser(result.user);
     } catch (error) {
       console.log(error);
       setErrorMessage("unable to connect to server");
