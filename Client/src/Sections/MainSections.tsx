@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import useAuth from "./AuthContext";
 import { FaEye, FaEyeSlash, FaGoogle, FaGithub } from "react-icons/fa";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 type RegisterType = {
   username: string;
@@ -392,7 +392,9 @@ function Register() {
                       onClick={(e) => e.preventDefault()}
                       className="text-xs font-medium text-red-600 hover:text-gray-900 sm:text-sm"
                     >
-                      <Link to="/reset"> Forgot password</Link>
+                      {/* <Link to="/passOtp"> Forgot password</Link>
+                       */}
+                      <p > Forgot password</p>
                     </a>
                   </div>
 
