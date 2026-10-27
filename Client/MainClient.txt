@@ -6,5 +6,282 @@ basic ways of  building some forms
    add validations condation logic   
     form submition
 
+React context is used    to pass some data iisnde the componts with out making the data fow complex
+ mostly used for login and regstrtiona and theme and localtion
+
+                https://blog.logrocket.com/how-to-use-react-context-typescript/#setting-up-demo-react-app
+ere are four steps to using React context:
+
+Create context using the createContext method.
+Take your created context and wrap the context provider around your component tree.
+Put any value you like on your context provider using the value prop.
+Read that value within any component by using the context consumer.
+
 we used the \conninfo
  to check the port the db and the name of the db inside the psql -U postgres
+signup using the google account allow us to do quick authon our website and and user share ingo securily
+
+ singup means the user is  happy to share theirprofile info with you
+
+
+
+
+
+ CREATE TABLE users (
+ id SERIAL PRIMARY KEY,
+ username  VARCHAR(50),
+ email VARCHAR(255) UNIQUE,
+ password TEXT,
+ phone INT,
+ company_name VARCHAR(100),
+ companyAddress   VARCHAR(100),
+ created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE refresh_tokens (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE NOT NULL,
+    token TEXT UNIQUE NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    done_date TIMESTAMPTZ NOT NULL 
+
+
+);
+
+CREATE TABLE profiles (
+ id SERIAL PRIMARY KEY,
+ user_id INT UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE ,
+ first_name VARCHAR(50),
+ last_name VARCHAR(50),
+ bio TEXT,
+ avater_url TEXT,
+ updated_at TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+ created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+
+);
+
+
+CREATE TABLE login_methods (
+    id SERIAL PRIMARY KEY,
+    user_id INT   NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    provider TEXT  NOT NULL,
+    provider_user_id TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    
+     UNIQUE ( provider,provider_user_id)
+);
+
+
+
+ Oauth is open autoriaztion protocol that allow third party protocol s that allow the users to access resources that are protected  with out ssharing their credtionals
+
+  so we  will use the OAuth client id, we need to account in the  google claude console adn get client id
+  backend:
+   the peocess is like this the user click reguister with the  google and clcik the btn
+    then the google oAuth screen will start and   the user login based on the user creditoals and google verify and send  permission to ur app then and the google send the ID token then the front accept the token and send it to the backend  via an aoi and the backend acceopt the ID and verify them usin some libas like google-auth-lab  then if the token is valid we will register if not we will send error and we generate the jwt tokens and send them to fron  and backend
+
+
+ we  gona see   what is contexxt in the tsx and how can we use it in the  autitcation it is like props  but more   like  good to use and it has not props deailing
+
+ usecontex is a method of  sharing  and read data bewteen  componts  without using the  props and deatl props
+
+ createContexts:carry the shared data
+ provide  make the share data avalable for other componts
+ like myConetx.provider/>
+
+
+ useContext allow users to read the value in the componts
+
+ createContext :define the system
+  the provider:supply the water
+  useContext :allow the componts toaccess the  value
+
+so let create something  that share username and email form the login user  
+ so first we use it and  create the contexxt
+
+
+ import {createContext} from "react
+  type UserContextType= {
+    username:string,
+    email:string
+    profile:string,
+
+  }
+
+  const  userContext=createContext<UserContextType>({
+    username:"solo",
+    email:"iam@gmail.com",
+    profile:"iam solo"
+  })
+
+  export default  userContext
+
+
+  provide means the one that provide of give the distbution
+  import userContext from "./context/userContext
+  import Profile from "./profile/profile.tsx 
+   function App() {
+    return (
+        <div>
+        <userContext.provider value={{username:"faris " email:"solo" password :"qwer"}}>
+
+        </userContext.provider>
+
+         </div>
+    )
+   }
+
+
+
+   router.get("/me", async (req: Request, res: Response) => {
+  try {
+    const token = req.cookies?.token;
+    if (!token) return res.status(401).json({ message: "Not logged in" });
+
+    const decoded = jwt.verify(token, secret) as { id: number };
+    const result = await Pool.query(
+      "SELECT id, username, email FROM users WHERE id=$1",
+      [decoded.id]
+    );
+    if (result.rows.length === 0)
+      return res.status(401).json({ message: "Not logged in" });
+
+    return res.status(200).json({ user: result.rows[0] });
+  } catch {
+    return res.status(401).json({ message: "Not logged in" });
+  }
+  
+   the backend need the /me that used asa who i am
+
+
+    and this is the useContext
+    import { createContext, useContext, useEffect, useState } from "react";
+import type { ReactNode } from "react";
+
+const API = "http://localhost:2040/api";
+
+type User = { id: number; username: string; email: string };
+
+type AuthContextType = {
+  user: User | null;
+  loading: boolean;
+  setUser: (user: User | null) => void;
+  logout: () => Promise<void>;
+};
+
+// 1. CREATE
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// 2. PROVIDE
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // runs once when the app starts: "who am I?"
+  useEffect(() => {
+    async function checkMe() {
+      try {
+        const res = await fetch(`${API}/me`, { credentials: "include" });
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data.user);
+        }
+      } catch {
+        // not logged in, user stays null
+      } finally {
+        setLoading(false);
+      }
+    }
+    checkMe();
+  }, []);
+
+  async function logout() {
+    await fetch(`${API}/logout`, { method: "POST", credentials: "include" });
+    setUser(null);
+  }
+
+  return (
+    <AuthContext.Provider value={{ user, loading, setUser, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+// 3. CONSUME, the custom hook
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
+  return ctx;
+}
+
+
+<BrowserRouter>
+  <AuthProvider>
+    <App />
+  </AuthProvider>
+</BrowserRouter>
+
+
+
+ and this is to wrap the app
+  and this is for the login noPropertyAccessFromIndexSignatureconst { setUser } = useAuth();      // top of the component
+const navigate = useNavigate();     // from react-router-dom
+
+// after: if (!response.ok) { ...return; }
+setUser(result.user);
+navigate("/profile");
+
+
+
+
+ and this is the profile 
+ import { Navigate } from "react-router-dom";
+
+function Profile() {
+  const { user, loading } = useAuth();
+
+  if (loading) return <p>Loading...</p>;               // state 1
+  if (!user) return <Navigate to="/login" replace />;  // state 2
+  return <h1>Hello {user.username}</h1>;               // state 3
+}
+
+
+
+
+
+
+type UserInfo= {
+  username:string,email:string,password:string,
+}
+
+const UserFullContext= {
+  user:UserInfo |null,
+  setUser:(user:UserInfo)=> void
+}
+
+
+
+
+ const UserCpntext=createContext<UserFullContext>| undefined>(undefined)
+
+
+function UserProider({childern}:{childern:react.Node}) {
+
+const [me ,setMe]
+
+
+}
+
+  graph  ql is aquery lan guge used to query  apis and  runtime excutions  it alow client tok get dat only they needed  and make the query and  the performce  efficent 
+   graph ql is used too query  apis not datbase  and  sql is used to intrcte and manipulte the databse and the  grpph is used to mainpulate apis effectivily
+
+
+    graph  ql  make client  query data  they need and make it effecnt also aulike the  rest api or toher  witch have mutipek end points the  graph has one api end ponts   the graph ql has /graph   end points  ,
+   graph ql allow u to fetch related data in one   query also grap  qi used the real time  connection all
+
+grapg  ql is used  for fetch data in the frontend and abckend
+mutation is used to define or modfie data 
+subscrption is used to rel time update and  you can  get new things
+

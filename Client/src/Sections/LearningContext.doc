@@ -96,3 +96,70 @@ It’s a copy because both do the same job: send, read the answer, set the user,
 One error state for both forms. Rename registerError to error, and show the same error box inside the login form. switchTab already clears it.
 Login button needs disabled={loading} and a “Please wait...” text, like the register button.
 Redirect if already logged in. The context also has a loading, which clashes with your page’s loading. Rena
+
+
+
+
+ ok now we have implmented the  context api now lets go to the   Oauth
+ google identity  services  allow user to vertify user  based on the Oauth so it has three  steps
+ #1:create and config a google Api project in the google concel
+ #2:  create some ui that user the gls
+ #3: update the backend api by recing the tokens
+
+
+Configure Google Consent Screen
+
+Generate Client Id and Client Secret
+
+Initialize a Node Js application 
+
+Setup .env file
+
+Building the Application and Integrate Google Apis
+
+Connect with Frontend
+
+Lets Break down what actually happens?
+
+Source Code 😉
+
+
+
+ would have it, I didn’t have to search too far. While searching the local job boards, I saw a post for a position that looked like a good fit, at a company I respected. I didn’t meet the experience requirement. I didn’t have all the skills listed in the job description. But I applied anyway. I figured the worst-case-scenario was they would say no.
+
+
+
+ ==========
+ er Interviews = 45% of Data Structures & Algorithms + 45% OOPs & System Design Concepts + 10% project work
+
+I spent close to 3 months along with the internship and 2 months after, doing and redoing Leetcode questions and understanding the basic fundamentals of data structures and object-oriented programming.
+
+
+
+
+
+e Cloud Console
+Create a new project
+Navigate to OAuth Consent Screen and configure it:
+- Choose External (for public apps) - Fill out required fields, then Publish
+ for   google  Oauth
+   https://www.codewithseb.com/blog/implementation-of-google-login-in-react-vite-application-using-react-oauth-google
+    needed packages :
+    npm install @react-oauth/google jwt-decode
+
+
+
+     clearn and  meantanable  code means  a code  that can be unserststand by other easy and can be scalable  by u or other dev
+    1: use meaningFull varable names
+    const x="jone =bad
+    const username="jone"
+     goood practices
+  b: avoid conblicity like  simpilicity is the way
+  c:conststancey like folow some code writing methods
+d: moduirity
+ break ur code  to  small pecess like isntead of creating all the llogin logout and the profile in one function just create their own fucntions
+
+E:code reusabblility:use one section of  code to another
+F:scalability: write a code that can hanfdle future codes and addtionis 
+G: aviod hand writing like the https use porcess.env
+H:error handling gracefully
