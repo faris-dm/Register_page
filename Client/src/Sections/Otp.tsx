@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState} from "react";
 import { FiMail, FiArrowRight, FiShield } from "react-icons/fi";
 import { ImSpinner8 } from "react-icons/im";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -37,7 +37,7 @@ export default function EmailVerification() {
       }
 
       setCode(["", "", "", "", "", ""]);
-      Navigate("/newPassword");
+      Navigate("/api/profile");
       setUser(result.user);
     } catch (error) {
       console.log(error);

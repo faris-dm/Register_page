@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import useAuth from "./AuthContext";
 import { FaEye, FaEyeSlash, FaGoogle, FaGithub } from "react-icons/fa";
-import { useNavigate, Navigate, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 type RegisterType = {
   username: string;
@@ -28,7 +28,7 @@ function Register() {
     email: "",
     password: "",
   });
-  const { checking, user, setUser } = useAuth();
+  const { checking, setUser } = useAuth();
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
