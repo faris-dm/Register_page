@@ -124,41 +124,6 @@ router.post("/signup", async (req: Request, res: Response) => {
     console.log(`otp accepted`, emailOTP.rejected);
     console.log(`otp accepted`, emailOTP.response);
 
-    // const accessInputs = {
-    //   id: finalResult.id,
-    //   email: finalResult.email,
-    // };
-
-    // const refreshInput = {
-    //   id: finalResult.id,
-    // };
-
-    // const accessToknes = generateAccess(accessInputs);
-    // console.log(accessToknes);
-    // const refreshTokens = geneateRefresh(refreshInput);
-    //     await Pool.query(
-    //       `
-    //  INSERT INTO  refresh_tokens (user_id,token,done_date)  VALUES ($1,$2,$3) RETURNING id,user_id,token`,
-    //       [
-    //         finalResult.id,
-    //         refreshTokens,
-    //         new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    //       ]
-    //     );
-
-    //     res.cookie("token", accessToknes, {
-    //       httpOnly: true,
-    //       secure: true,
-    //       sameSite: "none",
-    //       maxAge: 15 * 60 * 1000,
-    //     });
-
-    //     res.cookie("refreshToken", refreshTokens, {
-    //       httpOnly: true,
-    //       secure: true,
-    //       sameSite: "none",
-    //       maxAge: 7 * 24 * 60 * 60 * 1000,
-    //     });
 
     return res.status(201).json({
       success: true,
