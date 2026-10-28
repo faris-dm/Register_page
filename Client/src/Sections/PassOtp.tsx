@@ -23,7 +23,7 @@ export default function EmailVerification() {
     setErrorMessage("");
 
     try {
-      const reponse = await fetch(`http://localhost:2040/api/otp`, {
+      const reponse = await fetch(`http://localhost:2040/api/otp/password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -37,7 +37,10 @@ export default function EmailVerification() {
       }
 
       setCode(["", "", "", "", "", ""]);
-      Navigate("/api/reset");
+      Navigate("/newPassword", {
+        state: { email },
+      });
+
       setUser(result.user);
     } catch (error) {
       console.log(error);
@@ -75,7 +78,8 @@ export default function EmailVerification() {
         </h1>
 
         <p className="mt-3 text-sm leading-6 text-gray-500">
-          We sent you a verification code. Enter the 6-digit code  to reset your password
+          We sent you a verification code. Enter the 6-digit code to reset your
+          password
         </p>
 
         {/* OTP inputs */}
