@@ -96,7 +96,7 @@ router.post("/signup", async (req: Request, res: Response) => {
     const otpHashs = hastOTp(otp);
 
     const addOTPQuery = await Pool.query(
-      `INSERT INTO  otp_table  (user_id,otp,expires_at)VALUES ($1,$2,$3) `,
+      `INSERT INTO  otp_table  (user_id,otp,expires_at) VALUES ($1,$2,$3) `,
       [finalResult.id, otpHashs, expiresAt]
     );
 
@@ -122,8 +122,6 @@ router.post("/signup", async (req: Request, res: Response) => {
     console.log(otp);
     console.log(`otp accepted`, emailOTP.accepted);
     console.log(`otp accepted`, emailOTP.rejected);
-    console.log(`otp accepted`, emailOTP.response);
-
 
     return res.status(201).json({
       success: true,
@@ -244,10 +242,51 @@ router.post("/password/reset", async (req: Request, res: Response) => {
       ` SELECT  * FROM users  WHERE email=$1`,
       [email]
     );
-    if (!CheckEmail) {
-      return res.status(404).json({ message: "User not found" });
+
+    const finalQuery = CheckEmail.rows[0];
+    if (finalQuery.length === 0) {
+      return res.status(404).json({ message: "email does not  found" });
     }
-  } catch (error) {}
+    const otp = generateOtp();
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes from now
+    const otpHashs = hastOTp(otp);
+
+    const addQuery = await Pool.query(
+      `INSERT INTO otp_pass (user_id,pas_otp,expire_date) VALUES ($1,$2,$3)   `,
+      [finalQuery.id, otpHashs, expiresAt]
+    );
+
+    const sendOtp = NodeMailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.Owner_EMAIL,
+        pass: process.env.Owner_app_password,
+      },
+      tls: {
+        // Skip the certificate check only while developing
+        rejectUnauthorized: process.env.NODE_ENV === "production",
+      },
+    });
+
+    let emailOTP = await sendOtp.sendMail({
+      from: process.env.Owner_EMAIL,
+      to: finalQuery.email,
+      subject: "your pasword reset verfication OTP",
+      text: `enter this code ${otp} it will exprese in five minutes`,
+    });
+
+    console.log(otp);
+    console.log(`password reset otp accepted`, emailOTP.accepted);
+    console.log(`password reset otp rejected`, emailOTP.rejected);
+
+    return res.status(200).json({
+      success: true,
+      message: " email fo und succefully",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json("server failed");
+  }
 });
 
 router.post("/refreshToken", async (req: Request, res: Response) => {
@@ -308,8 +347,7 @@ router.post("/refreshToken", async (req: Request, res: Response) => {
   }
 });
 
-
-router.post("/otp", async (req, res) => {
+router.post("/otp/register", async (req, res) => {
   const { otp, email } = req.body;
 
   if (
@@ -450,5 +488,167 @@ router.post("/otp", async (req, res) => {
   }
 });
 
+router.post("/otp/password", async (req, res) => {
+  const { otp, email } = req.body;
+
+  if (
+    typeof email !== "string" ||
+    typeof otp !== "string" ||
+    !/^\d{6}$/.test(otp)
+  ) {
+    return res.status(400).json({
+      message: "Enter your email and a valid six-digit OTP",
+    });
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+  const client = await Pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    const result = await client.query(
+      `SELECT
+         o.id AS otp_id,
+         o.user_id,
+         o.pas_otp AS otp_hash,
+         o.expire_date
+       FROM otp_pass o
+       JOIN users u ON u.id = o.user_id
+       WHERE u.email = $1
+        
+       ORDER BY o.id DESC
+       LIMIT 1
+       FOR UPDATE OF o`,
+      [normalizedEmail]
+    );
+
+    if (result.rows.length === 0) {
+      await client.query("ROLLBACK");
+
+      return res.status(400).json({
+        message: "Invalid OTP or no pending verification",
+      });
+    }
+
+    const savedOtp = result.rows[0];
+
+    // Reject an expired OTP first.
+    if (new Date(savedOtp.expire_date).getTime() <= Date.now()) {
+      await client.query("DELETE FROM Otp_pass WHERE user_id = $1", [
+        savedOtp.user_id,
+      ]);
+
+      await client.query("COMMIT");
+
+      return res.status(400).json({
+        message: "OTP expired. Please request a new code.",
+      });
+    }
+
+    // Hash the submitted code and compare it with the stored hash.
+    const submittedOtpHash = hastOTp(otp);
+
+    if (submittedOtpHash !== savedOtp.otp_hash) {
+      await client.query("ROLLBACK");
+
+      return res.status(400).json({
+        message: "Invalid OTP",
+      });
+    }
+
+    // Verify the email only after the code passes validation.
+    // const verifiedResult = await client.query(
+    //   `UPDATE users
+    //    SET email_verified = TRUE
+    //    WHERE id = $1 AND email_verified = FALSE
+    //    RETURNING id, username, email`,
+    //   [savedOtp.user_id]
+    // );
+
+    // if (verifiedResult.rows.length === 0) {
+    //   await client.query("ROLLBACK");
+
+    //   return res.status(409).json({
+    //     message: "This account is already verified or unavailable",
+    //   });
+    // }
+
+    // const user = verifiedResult.rows[0];
+
+    // Consume the OTP so it cannot be reused.
+    await client.query("DELETE FROM Otp_pass WHERE user_id = $1", [
+      savedOtp.id,
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      message: "otp verified successfully",
+      savedOtp,
+    });
+  } catch (error) {
+    await client.query("ROLLBACK").catch(() => {});
+    console.error("OTP verification error:", error);
+
+    return res.status(500).json({
+      message: "Server failed to verify OTP",
+    });
+  } finally {
+    client.release();
+  }
+});
+
+router.post("/newPassword", async (req, res) => {
+  const { email, newPassword, confirmPassword } = req.body;
+  // done
+  try {
+    // Normalize the email
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Check if the email exists in the database
+    const client = await Pool.connect();
+    const selectEmail = await client.query(
+      `SELECT * FROM users WHERE email=$1`,
+      [normalizedEmail]
+    );
+
+    const emailResult = selectEmail.rows[0];
+    if (!emailResult) {
+      return res.status(404).json({
+        message: "Email not found. Please check and try again.",
+      });
+    }
+
+    // Ensure passwords match
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        message: "Passwords do not match. Please try again.",
+      });
+    }
+
+    // Hash the new password
+    const hashPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the user's password in the database
+    const updatedPassword = await client.query(
+      `UPDATE users SET password_hash=$1 WHERE email=$2 RETURNING id, username, email`,
+      [hashPassword, normalizedEmail]
+    );
+
+    // Release the client connection
+    client.release();
+
+    return res.status(200).json({
+      success: true,
+      message: "Password updated successfully.",
+      user: updatedPassword.rows[0], // Optional: Return updated user info
+    });
+  } catch (error) {
+    console.error("Error resetting password:", error);
+    return res.status(500).json({
+      message: "Server error. Please try again later.",
+    });
+  }
+});
 
 export default router;
