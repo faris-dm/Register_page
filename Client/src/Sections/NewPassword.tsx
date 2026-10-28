@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   FiLock,
   FiEye,
@@ -22,6 +22,7 @@ export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const Location = useLocation();
 
   // Validate passwords and send the new password to the backend.
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -29,7 +30,7 @@ export default function ResetPassword() {
     setError("");
     setSuccess("");
 
-    // Do not accept empty or short passwords.
+    // Validate password fields
     if (!password.trim() || !confirmPassword) {
       setError("Please enter and confirm your new password.");
       return;
@@ -40,28 +41,35 @@ export default function ResetPassword() {
       return;
     }
 
-    // Both password fields must match.
     if (password !== confirmPassword) {
       setError("Passwords do not match. Please try again.");
       return;
     }
 
     try {
+      const email = Location.state?.email; // Get email from state
+      if (!email) {
+        setError("Email is missing. Please try again.");
+        return;
+      }
+
       setLoading(true);
 
-      const response = await fetch("/api/reset_password", {
+      // Send request to the backend
+      const response = await fetch("http://localhost:2040/api/newPassword", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         credentials: "include",
         body: JSON.stringify({
+          email,
           newPassword: password,
           confirmPassword,
         }),
       });
 
-      // Handle responses that may not contain JSON.
+      // Handle the response
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
@@ -73,6 +81,7 @@ export default function ResetPassword() {
       setSuccess(data.message || "Your password has been reset successfully.");
       setPassword("");
       setConfirmPassword("");
+      navigate("/login");
     } catch (err: unknown) {
       setError(
         err instanceof Error
