@@ -8,11 +8,12 @@ import OauthBack from "./src/Routes/OauthBack.js";
 import cookieParser from "cookie-parser";
 import Me from "./src/config/me.js";
 import Reset from "./src/Routes/Reset.js"
+import "dotenv/config"
 
 const app = express();
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin:process.env.CLIENT_URL,
     credentials: true,
   })
 );
