@@ -1,10 +1,11 @@
 import MainSection from "./MainSections";
 import ProfilePage from "./Profile";
-import Forget from "./Forget";
+// import Forget from "./Forget";
 import EmailVerification from "./Otp";
-
+import EmailPasswordChange from "./EnterEmail";
 import { Routes, Route } from "react-router-dom";
 import NewPassword from "./NewPassword";
+import PassOtp from "./PassOtp";
 
 function AppRoute() {
   return (
@@ -12,8 +13,23 @@ function AppRoute() {
       <Route path="/" element={<MainSection />}></Route>
       <Route path="/api/profile" element={<ProfilePage />}></Route>
 
-      <Route path="/reset" element={<Forget />}></Route>
+      <Route path="/passOtp" element={<PassOtp />} />
+
+      {/*  input otp for reset password */}
+      {/*  for password */}
+
+      <Route path="/enter_email" element={<EmailPasswordChange />} />
+      {/* this used to send email to reset ur password */}
+
+      {/* <Route path="/reset" element={<Forget />}></Route> */}
+      {/* send email toreset ur password */}
+
       <Route path="/newPassword" element={<NewPassword />}></Route>
+
+      {/* enter new password */}
+
+      {/* to  verify ur account email */}
+
       <Route path="/email" element={<EmailVerification />}></Route>
     </Routes>
   );
