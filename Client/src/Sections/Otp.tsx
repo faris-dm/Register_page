@@ -23,7 +23,7 @@ export default function EmailVerification() {
     setErrorMessage("");
 
     try {
-      const reponse = await fetch(`http://localhost:2040/api/otp`, {
+      const reponse = await fetch(`http://localhost:2040/api/otp/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
