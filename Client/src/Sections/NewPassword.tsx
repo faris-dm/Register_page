@@ -81,7 +81,7 @@ export default function ResetPassword() {
       setSuccess(data.message || "Your password has been reset successfully.");
       setPassword("");
       setConfirmPassword("");
-      navigate("/login");
+      navigate("/");
     } catch (err: unknown) {
       setError(
         err instanceof Error
