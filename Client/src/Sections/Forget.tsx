@@ -1,5 +1,3 @@
-
-
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
@@ -39,7 +37,7 @@ export default function ForgotPassword() {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:2040/api/forget_password", {
+      const res = await fetch("http://localhost:2040/api/password/reset", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim() }),
@@ -91,7 +89,7 @@ export default function ForgotPassword() {
           viewBox="0 0 400 400"
           aria-hidden="true"
           focusable="false"
-          className="pointer-events-none absolute -right-[30%] top-1/2 hidden w-[120%] max-w-[38rem] -translate-y-1/2 text-white/15 md:block"
+          className="pointer-events-none absolute -rigfht-[30%] top-1/2 hidden w-[120%] max-w-[38rem] -translate-y-1/2 text-white/15 md:block"
         >
           <g fill="none" stroke="currentColor" strokeWidth="1">
             <circle cx="200" cy="200" r="60" />

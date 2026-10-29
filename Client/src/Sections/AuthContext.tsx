@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    useEffect(()=> {
    async function  CatchMe() {
     try {
-      const res=await fetch(`http://localhost:2040/api/me`,{credentials:"include"})
+      const res=await fetch("http://localhost:2040/api/me",{credentials:"include"})
       if(res.ok) {
          const data= await res.json()
          setUser(data.user)
