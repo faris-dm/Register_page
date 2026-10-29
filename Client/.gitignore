@@ -6,9 +6,11 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-
+MainClient
 node_modules/
+../node_modules
 dist
+LearningContext
 dist-ssr
 *.local
 node_modules/
