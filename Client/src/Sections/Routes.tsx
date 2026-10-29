@@ -1,4 +1,7 @@
 import MainSection from "./MainSections";
+import NotFound from "./404";
+
+import { ProtectedRoute, PublicRoute } from "../Middle/Check";
 import ProfilePage from "./Profile";
 // import Forget from "./Forget";
 import EmailVerification from "./Otp";
@@ -10,8 +13,22 @@ import PassOtp from "./PassOtp";
 function AppRoute() {
   return (
     <Routes>
-      <Route path="/" element={<MainSection />}></Route>
-      <Route path="/api/profile" element={<ProfilePage />}></Route>
+      <Route
+        path="/"
+        element={
+          <PublicRoute>
+            <MainSection />
+          </PublicRoute>
+        }
+      ></Route>
+      <Route
+        path="/api/profile"
+        element={
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        }
+      ></Route>
 
       <Route path="/passOtp" element={<PassOtp />} />
 
@@ -31,6 +48,8 @@ function AppRoute() {
       {/* to  verify ur account email */}
 
       <Route path="/email" element={<EmailVerification />}></Route>
+
+      <Route path="*" element={<NotFound />}></Route>
     </Routes>
   );
 }
