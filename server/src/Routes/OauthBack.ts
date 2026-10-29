@@ -124,7 +124,7 @@ http: router.get(
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    res.redirect("http://localhost:5173/api/profile"); // Redirect to the frontend
+    res.redirect(`http://localhost:5173/api/profile`); // Redirect to the frontend
   }
 );
 
