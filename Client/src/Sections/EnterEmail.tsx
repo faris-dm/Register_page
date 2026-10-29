@@ -30,7 +30,7 @@ export default function EmailReset() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:2040/email_reset", {
+      const response = await fetch("http://localhost:2040/api/password/reset", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,7 +55,7 @@ export default function EmailReset() {
       setMessage(data.message || "Verification code sent successfully.");
 
       // Pass the email to the OTP page.
-      navigate("/otp", {
+      navigate("/passOtp", {
         state: { email: email.trim() },
       });
     } catch (error) {
