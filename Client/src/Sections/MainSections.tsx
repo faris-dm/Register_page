@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import useAuth from "./AuthContext";
 import { FaEye, FaEyeSlash, FaGoogle, FaGithub } from "react-icons/fa";
-import { useNavigate,Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 type RegisterType = {
   username: string;
@@ -52,7 +52,7 @@ function Register() {
   function handleLoginChange(e: ChangeEvent<HTMLInputElement>) {
     setLoginForm({
       ...loginForm,
-      [e.target.name]:                     e.target.value,
+      [e.target.name]: e.target.value,
     });
   }
 
@@ -423,6 +423,15 @@ function Register() {
                     </button>
                   </div>
                 </div>
+                {/* Display Error Message */}
+                {errorMessage && (
+                  <p
+                    role="alert"
+                    className="rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-600"
+                  >
+                    {errorMessage}
+                  </p>
+                )}
 
                 {/* MAIN LOGIN BUTTON */}
                 <button
