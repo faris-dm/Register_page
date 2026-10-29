@@ -1,48 +1,70 @@
+import { useState, useEffect } from "react";
+import type { ReactNode } from "react";
+
 type PageLoaderProps = {
+  loading: boolean;
+  children: ReactNode;
+  minMs?: number;
   text?: string;
-  fullScreen?: boolean;
 };
 
-const BRAND = "MERIDIAN".split("");
-
 export default function PageLoader({
-  text = "Checking your session...",
-  fullScreen = true,
+  loading,
+  children,
+  minMs = 1500,
+  text = "Getting things ready",
 }: PageLoaderProps) {
+  const [minDone, setMinDone] = useState<boolean>(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setMinDone(true), minMs);
+    return () => clearTimeout(timer);
+  }, [minMs]);
+
+  if (!loading && minDone) {
+    return <>{children}</>;
+  }
+
   return (
     <div
       role="status"
       aria-live="polite"
-      className={`flex w-full flex-col items-center justify-center gap-5 bg-white px-4 text-center sm:gap-6 dark:bg-neutral-950 ${
-        fullScreen ? "min-h-dvh" : "min-h-64"
-      }`}
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-8 bg-[linear-gradient(135deg,#4f46e5,#9333ea,#ec4899)] px-4 text-center sm:gap-10"
     >
-      {/* Spinner */}
-      <div className="relative flex h-16 w-16 items-center justify-center sm:h-20 sm:w-20 md:h-24 md:w-24">
-        <span className="absolute inset-0 rounded-full border-4 border-neutral-200 dark:border-neutral-800" />
-        <span className="absolute inset-0 animate-spin rounded-full border-4 border-transparent border-t-indigo-600" />
-        <span className="h-2 w-2 animate-ping rounded-full bg-indigo-600 sm:h-3 sm:w-3" />
+      <style>{`
+        @keyframes roll {
+          0%   { left: 0; transform: rotate(0deg); }
+          50%  { left: calc(100% - var(--ball)); transform: rotate(540deg); }
+          100% { left: 0; transform: rotate(0deg); }
+        }
+      `}</style>
+
+      <div className="relative h-10 w-56 max-w-full sm:h-12 sm:w-80 md:w-[28rem]">
+        <div
+          className="absolute top-0 h-10 w-10 rounded-full bg-white shadow-xl [--ball:2.5rem] sm:h-12 sm:w-12 sm:[--ball:3rem]"
+          style={{ animation: "roll 2s ease-in-out infinite" }}
+        >
+          <span className="absolute left-1/2 top-1 h-2.5 w-2.5 -translate-x-1/2 rounded-full bg-pink-500 sm:h-3 sm:w-3" />
+          <span className="absolute bottom-1 left-1/2 h-2.5 w-2.5 -translate-x-1/2 rounded-full bg-indigo-500 sm:h-3 sm:w-3" />
+        </div>
+        <span className="absolute -bottom-2 left-0 h-1 w-full rounded-full bg-white/30" />
       </div>
 
-      {/* Brand name, letters pulse one by one */}
-      <h1
-        aria-label="Meridian"
-        className="flex pl-[0.25em] text-xl font-semibold tracking-[0.25em] text-neutral-900 sm:text-3xl md:text-4xl dark:text-white"
-      >
-        {BRAND.map((letter, i) => (
-          <span
-            key={i}
-            aria-hidden="true"
-            className="animate-pulse"
-            style={{ animationDelay: `${i * 120}ms` }}
-          >
-            {letter}
-          </span>
-        ))}
+      <h1 className="pl-[0.25em] text-2xl font-bold tracking-[0.25em] text-white drop-shadow sm:text-4xl md:text-5xl">
+        MERIDIAN
       </h1>
 
-      <p className="text-xs text-neutral-500 sm:text-sm md:text-base dark:text-neutral-400">
+      <p className="flex items-end gap-1 text-sm text-white/90 sm:text-base">
         {text}
+        <span className="mb-1 h-1.5 w-1.5 animate-bounce rounded-full bg-white" />
+        <span
+          className="mb-1 h-1.5 w-1.5 animate-bounce rounded-full bg-white"
+          style={{ animationDelay: "150ms" }}
+        />
+        <span
+          className="mb-1 h-1.5 w-1.5 animate-bounce rounded-full bg-white"
+          style={{ animationDelay: "300ms" }}
+        />
       </p>
     </div>
   );
