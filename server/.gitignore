@@ -2,3 +2,16 @@ node_modules/
 MaintainCode
 ./.env
 .env
+
+
+
+
+
+Input	Answer
+Name	anything, e.g. auction-api
+Language / Runtime	Node
+Branch	main
+Root Directory	server (the folder that has your package.json)
+Build Command	npm install && npm run build
+Start Command	npm start
+Instance type	Free (fine for testing)
