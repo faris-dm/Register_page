@@ -56,18 +56,21 @@ export default function ResetPassword() {
       setLoading(true);
 
       // Send request to the backend
-      const response = await fetch("http://localhost:2040/api/newPassword", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          email,
-          newPassword: password,
-          confirmPassword,
-        }),
-      });
+      const response = await fetch(
+        "https://oauth-page-ka4i.onrender.com/api/newPassword",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            email,
+            newPassword: password,
+            confirmPassword,
+          }),
+        }
+      );
 
       // Handle the response
       const data = await response.json().catch(() => ({}));

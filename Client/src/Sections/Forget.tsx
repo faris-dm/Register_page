@@ -37,11 +37,14 @@ export default function ForgotPassword() {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:2040/api/password/reset", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
-      });
+      const res = await fetch(
+        "https://oauth-page-ka4i.onrender.com/api/password/reset",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email.trim() }),
+        }
+      );
 
       // const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error("Request failed");

@@ -11,7 +11,7 @@ import Pool from "../config/db.js";
 const router = Router();
 router.use(cookieParser());
 router.use(passport.initialize());
-const API_URL = "http://localhost:2040";
+const API_URL = "https://oauth-page-ka4i.onrender.com";
 import type { VerifyCallback } from "passport-oauth2";
 // pasport.use( new go({}, aync (a,b,c,d)=> {} return))
 passport.use(

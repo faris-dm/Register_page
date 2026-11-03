@@ -43,10 +43,12 @@ function Register() {
   }
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:2040/api/auth/google";
+    window.location.href =
+      "https://oauth-page-ka4i.onrender.com/api/auth/google";
   };
   const handleGitHubLogin = () => {
-    window.location.href = "http://localhost:2040/api/auth/github";
+    window.location.href =
+      "https://oauth-page-ka4i.onrender.com/api/auth/github";
   };
 
   function handleLoginChange(e: ChangeEvent<HTMLInputElement>) {
@@ -70,12 +72,15 @@ function Register() {
     try {
       setLoading(true);
 
-      const response = await fetch("http://localhost:2040/api/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(registerForm),
-      });
+      const response = await fetch(
+        "https://oauth-page-ka4i.onrender.com/api/signup",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(registerForm),
+        }
+      );
 
       const result = await response.json();
 
@@ -107,12 +112,15 @@ function Register() {
     try {
       setLoading(true);
 
-      const response = await fetch("http://localhost:2040/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(loginForm),
-      });
+      const response = await fetch(
+        "https://oauth-page-ka4i.onrender.com/api/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(loginForm),
+        }
+      );
 
       const result = await response.json();
 

@@ -30,16 +30,19 @@ export default function EmailReset() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:2040/api/password/reset", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          email: email.trim(),
-        }),
-      });
+      const response = await fetch(
+        "https://oauth-page-ka4i.onrender.com/api/password/reset",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            email: email.trim(),
+          }),
+        }
+      );
 
       const data = await response.json();
 

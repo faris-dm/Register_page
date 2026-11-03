@@ -23,12 +23,15 @@ export default function EmailVerification() {
     setErrorMessage("");
 
     try {
-      const reponse = await fetch(`http://localhost:2040/api/otp/password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ otp: digitOTP, email }),
-      });
+      const reponse = await fetch(
+        `https://oauth-page-ka4i.onrender.com/api/otp/password`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ otp: digitOTP, email }),
+        }
+      );
 
       const result = await reponse.json();
       if (!reponse.ok) {

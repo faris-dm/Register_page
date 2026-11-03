@@ -1,4 +1,4 @@
-import { useState} from "react";
+import { useState } from "react";
 import { FiMail, FiArrowRight, FiShield } from "react-icons/fi";
 import { ImSpinner8 } from "react-icons/im";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -23,12 +23,15 @@ export default function EmailVerification() {
     setErrorMessage("");
 
     try {
-      const reponse = await fetch(`http://localhost:2040/api/otp/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ otp: digitOTP, email }),
-      });
+      const reponse = await fetch(
+        `https://oauth-page-ka4i.onrender.com/api/otp/register`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ otp: digitOTP, email }),
+        }
+      );
 
       const result = await reponse.json();
       if (!reponse.ok) {
