@@ -2,7 +2,7 @@
 import express from "express";
 import type { Request, Response } from "express";
 import cors from "cors";
-import Pool from "./src/config/db.js";
+import Pool from  "./src/config/db.js"
 import Registation from "./src/Routes/Register.js";
 import OauthBack from "./src/Routes/OauthBack.js";
 import cookieParser from "cookie-parser";
