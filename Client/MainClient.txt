@@ -285,3 +285,71 @@ grapg  ql is used  for fetch data in the frontend and abckend
 mutation is used to define or modfie data 
 subscrption is used to rel time update and  you can  get new things
 
+
+ts:by micrposoft
+ts:provie early error detections so  it make coding less pain full
+ fast:error detections ,easy to read
+
+   whe to use the  type annoations 
+    when fucntions and parameters need  clarity
+
+type annotaier: like type used  to tell the ts  what type of value it must be means it tell the type of the value so the complier check every value  it type 
+interface used to objects
+type annoations are  a small amount of  code that tell the ts what type of a varable should be
+array = solo:string[]=["daz","SOLO"]
+
+
+infrance is used to describe the shape of an objects
+infrance solo = {
+  name:string;
+  user:string;
+  email:string;
+}
+ without infreance    u will dfine the  the varable many times like 
+ function Useradmin(user:{id:string,email:"string})
+ function supplier(user:{id:string,email:"string}) 
+ but using the infreance 
+ \\infrance User = {
+  username:string;
+  email:string;
+
+  password:string;
+ }
+
+  so the infrance is used  for mintaiableity and 
+
+  type alliyas  is anam e to atype and you write the type  and it will be sued  everywhere
+
+  as enum  id  anme group of constant  likr  you define   what one vlaue accept and it only use that like
+  enum Role {
+    superADmin="super admin"
+    admin ="admin"
+    seller="solo"
+    buyer="slol"
+  }
+
+  used to define  to definr  set of roles that cretian values of possible value like 
+  enum  most used for known object like enum gender {
+    male,femail
+  }lest youd efine a set of values that are cosnstant and know
+  it is sued to make ur code easier to read and to work with it used to define the constant values 
+  they add the performace of the process in this code documations 
+
+ts generics  allow user  to write resuable and generalized   form of  fucntions ,calasses and interfaces 
+generic  used to create class functions thar cn be used many time  to may diffreanct  data types means
+function GetRandomElements(item:number[]) : number {
+  let randomindex=Math.floor(Math.random()* item.length)
+  return item[randomindex]
+}
+
+ so  this fucntion get some array of numbers and   send one like choose one and send one  but   what if we want to use ths with colors like   many colores so we sue the gegerics   and
+ we can use the type as any but is is not  type seffity so
+  function GetrandomeEelement<T>(items:T[]): T {
+    let randomIndex=Math.floor(Math.random() *math.length)
+    return item[random]
+  }
+
+  geneic allow  you to code  fucntions and class  that work in multipe data types 
+
+
+  Module is away of organizinf  you code    by sepllting and manageing and organzinf the code 
