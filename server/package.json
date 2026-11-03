@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch Server.ts",
-    "start": "node Server.ts"
+    "start": "tsx Server.ts"
   },
   "keywords": [],
   "author": "",
