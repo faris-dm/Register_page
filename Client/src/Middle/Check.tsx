@@ -12,7 +12,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   if (checking) {
     return (
       <div>
-      <p>Loading.....</p>
+        <p>Loading.....</p>
       </div>
     );
   }
@@ -33,7 +33,7 @@ export const PublicRoute = ({ children }: PublicRouteProps) => {
 
   // While checking the user's authentication state, show a loading indicator
   if (checking) {
-    return <div><Loading/></div>;
+    return <div>Loading....</div>;
   }
 
   // If the user is logged in, redirect to the profile page

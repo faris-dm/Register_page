@@ -12,17 +12,17 @@ import "dotenv/config";
 
 const app = express();
 
-app.use(express.json());
-app.use(cookieParser());
-app.use("/api", Me);
-app.use("/api", Reset);
-
 app.use(
   cors({
     origin: ["https://authpage-eight.vercel.app"],
     credentials: true,
   })
 );
+
+app.use(express.json());
+app.use(cookieParser());
+app.use("/api", Me);
+app.use("/api", Reset);
 
 // did
 
