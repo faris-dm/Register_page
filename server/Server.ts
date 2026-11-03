@@ -2,25 +2,27 @@
 import express from "express";
 import type { Request, Response } from "express";
 import cors from "cors";
-import Pool from  "./src/config/db.js"
+import Pool from "./src/config/db.js";
 import Registation from "./src/Routes/Register.js";
 import OauthBack from "./src/Routes/OauthBack.js";
 import cookieParser from "cookie-parser";
 import Me from "./src/config/me.js";
-import Reset from "./src/Routes/Reset.js"
-import "dotenv/config"
+import Reset from "./src/Routes/Reset.js";
+import "dotenv/config";
 
 const app = express();
 app.use(
   cors({
-    origin:process.env.CLIENT_URL,
+    origin: process.env.CLIENT_URL,
     credentials: true,
   })
 );
 app.use(express.json());
 app.use(cookieParser());
 app.use("/api", Me);
-app.use("/api",Reset)
+app.use("/api", Reset);
+
+// did
 
 const PORT = 2040;
 app.use("/api", Registation);
@@ -35,5 +37,5 @@ Pool.query("SELECT NOW()")
   .catch((d) => console.log("db failed", d.message));
 
 app.listen(PORT, () => {
-  console.log(` the port is running in the http://localhost:${PORT}`);
+  console.log(`the port is running in the http://localhost:${PORT}`);
 });
