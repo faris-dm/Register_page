@@ -11,16 +11,18 @@ import Reset from "./src/Routes/Reset.js";
 import "dotenv/config";
 
 const app = express();
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL,
-    credentials: true,
-  })
-);
+
 app.use(express.json());
 app.use(cookieParser());
 app.use("/api", Me);
 app.use("/api", Reset);
+
+app.use(
+  cors({
+    origin: ["https://authpage-eight.vercel.app"],
+    credentials: true,
+  })
+);
 
 // did
 

@@ -124,7 +124,7 @@ http: router.get(
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    res.redirect(`authpage-eight.vercel.app/api/profile`); // Redirect to the frontend
+    res.redirect(`https://authpage-eight.vercel.app//api/profile`); // Redirect to the frontend
   }
 );
 
@@ -270,7 +270,7 @@ router.get(
         sameSite: "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
-      res.redirect("authpage-eight.vercel.app/api/profile");
+      res.redirect("https://authpage-eight.vercel.app//api/profile");
     } catch (error) {
       console.log("error in the  github cllback ", error as Error);
       return res.status(500).send("internal server error");
